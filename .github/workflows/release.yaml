@@ -26,12 +26,14 @@ jobs:
           path: d1
       - uses: softprops/action-gh-release@v1
         with:
+          name: ReleaseExperimentHello
           files: d1
 
       - uses: actions/upload-artifact@v3
         with:
-          name: name1
-          path: d1
+          name: name2
+          path: d2
       - uses: softprops/action-gh-release@v1
         with:
-          files: d1
+          name: ReleaseExperimentHello
+          files: d2
