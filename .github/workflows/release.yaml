@@ -15,10 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: |
-          mkdir mydir
-          echo hi > mydir/a.txt
-          ls -al mydir
+      # ref: https://github.com/dart-lang/sdk/wiki/Building
 
       - name: Generate release tag
         id: tag
@@ -27,14 +24,52 @@ jobs:
           TAG=Build_$(date +"%Y.%m.%d_%H-%M-%S")
           echo "release_tag=$TAG" >> $GITHUB_OUTPUT
 
+      - run: exit 1
+      - run: exit 2
+      - run: exit 3
+
+      # for debug
+      - if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        with:
+          detached: true
+      - name: Sleep forever
+        run: sleep 1000000
+
+      - run: |
+          set -euxo pipefail
+
+          sudo apt-get install git python3 curl xz-utils
+          
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          export PATH="$PATH:$PWD/depot_tools"
+
+          mkdir dart-sdk
+          cd dart-sdk
+          fetch dart
+          ls -al
+          
+          cd sdk
+          export ASAN_OPTIONS="handle_segv=0:detect_leaks=1:detect_stack_use_after_return=0:disable_coredump=0:abort_on_error=1"
+          export ASAN_SYMBOLIZER_PATH="$PWD/buildtools/linux-x64/clang/bin/llvm-symbolizer"
+          ./tools/build.py --mode release --arch x64 --sanitizer asan runtime runtime_precompiled create_sdk
+          ls -al
+
+      - run: |
+          ls -al dart-sdk
+          ls -al dart-sdk/dart
+          ls -al dart-sdk/dart/out
+          ls -al dart-sdk/dart/out/ReleaseASANX64
+
       - uses: actions/upload-artifact@v3
         with:
-          name: name1
-          path: mydir
+          name: Dart_Out_ReleaseASANX64_DartBinary
+          path: dart-sdk/dart/out/ReleaseASANX64/dart-sdk/bin/dart
       - uses: actions/upload-artifact@v3
         with:
-          name: name2
-          path: mydir/a.txt
+          name: Dart_Out_ReleaseASANX64
+          path: dart-sdk/dart/out/ReleaseASANX64/
+
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
