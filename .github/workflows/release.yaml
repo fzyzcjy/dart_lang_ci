@@ -28,11 +28,6 @@ jobs:
         with:
           name: name1
           path: mydir
-      - uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
-          files: mydir
-
       - uses: actions/upload-artifact@v3
         with:
           name: name2
@@ -40,4 +35,4 @@ jobs:
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
-          path: mydir/a.txt
+          files: mydir/a.txt
