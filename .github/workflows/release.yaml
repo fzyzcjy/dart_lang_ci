@@ -120,6 +120,7 @@ jobs:
         with:
           tag_name: ${{ needs.generate-tag.outputs.release_tag }}
           files: ${{ env.OUTPUT_FILENAME }}
+          prerelease: true
 
       # for debug
       - if: ${{ failure() }}
