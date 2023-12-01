@@ -64,14 +64,14 @@ jobs:
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
-          files: mydir/a.txt
+          files: dart-sdk/sdk/out/ReleaseASANX64/dart-sdk/bin/dart
 
       # for debug
-      - if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
-        with:
-          detached: true
-      - if: ${{ failure() }}
-        name: Sleep forever
-        run: sleep 1000000
-
+#      - if: ${{ failure() }}
+#        uses: mxschmitt/action-tmate@v3
+#        with:
+#          detached: true
+#      - if: ${{ failure() }}
+#        name: Sleep forever
+#        run: sleep 1000000
+#
