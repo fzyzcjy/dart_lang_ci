@@ -17,13 +17,18 @@ jobs:
           echo hi > mydir/a.txt
           ls -al mydir
 
+      - name: Generate release tag
+        id: tag
+        run: |
+          echo "::set-output name=release_tag::Build_$(date +"%Y.%m.%d_%H-%M-%S")"
+
       - uses: actions/upload-artifact@v3
         with:
           name: name1
           path: mydir
       - uses: softprops/action-gh-release@v1
         with:
-          name: ReleaseExperimentHello
+          tag_name: ${{ steps.tag.outputs.release_tag }}
           files: mydir
 
       - uses: actions/upload-artifact@v3
@@ -32,5 +37,5 @@ jobs:
           path: mydir/a.txt
       - uses: softprops/action-gh-release@v1
         with:
-          name: ReleaseExperimentHello
+          tag_name: ${{ steps.tag.outputs.release_tag }}
           path: mydir/a.txt
