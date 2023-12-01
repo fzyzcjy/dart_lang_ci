@@ -65,7 +65,7 @@ jobs:
       - run: |
           set -euxo pipefail
           
-          echo 'release_tag=${{ jobs.generate-tag.outputs.release_tag }}'
+          echo 'release_tag=${{ needs.jobs.generate-tag.outputs.release_tag }}'
 
           sudo apt-get install git python3 curl xz-utils
           
@@ -105,7 +105,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ jobs.generate-tag.outputs.release_tag }}
+          tag_name: ${{ needs.jobs.generate-tag.outputs.release_tag }}
           files: dart_${{ matrix.info.out_dir }}
 
       # for debug
