@@ -30,6 +30,9 @@ jobs:
     needs: generate-tag
     runs-on: ubuntu-latest
 
+    env:
+      OUTPUT_FILENAME: ${{ matrix.info.out_dir }}_dart-sdk.tar.gz
+
     strategy:
       fail-fast: false
       matrix:
@@ -74,6 +77,7 @@ jobs:
 
       - run: |
           set -euxo pipefail
+
           export PATH="$PATH:$PWD/depot_tools"
 
           mkdir dart-sdk
@@ -90,6 +94,11 @@ jobs:
           ls -al
 
       - run: |
+          set -euxo pipefail
+
+          tar -czvf ${{ env.OUTPUT_FILENAME }} dart-sdk/sdk/out/${{ matrix.info.out_dir }}/dart-sdk
+
+      - run: |
           ls -al dart-sdk
           ls -al dart-sdk/sdk
           ls -al dart-sdk/sdk/out
@@ -100,8 +109,8 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: Dart_Out_${{ matrix.info.out_dir }}_DartBinary
-          path: dart-sdk/sdk/out/${{ matrix.info.out_dir }}/dart-sdk/bin/dart
+          name: Dart_Out_${{ matrix.info.out_dir }}_dart-sdk
+          path: ${{ env.OUTPUT_FILENAME }}
       - uses: actions/upload-artifact@v3
         with:
           name: Dart_Out_${{ matrix.info.out_dir }}
@@ -110,7 +119,7 @@ jobs:
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.jobs.generate-tag.outputs.release_tag }}
-          files: ${{ matrix.info.out_dir }}_dart-sdk.tar.gz
+          files: ${{ env.OUTPUT_FILENAME }}
 
       # for debug
       - if: ${{ failure() }}
