@@ -65,6 +65,8 @@ jobs:
       - run: |
           set -euxo pipefail
           
+          exit 1 # TODO
+          
           echo 'release_tag=${{ needs.jobs.generate-tag.outputs.release_tag }}'
 
           sudo apt-get install git python3 curl xz-utils
@@ -109,10 +111,10 @@ jobs:
           files: dart_${{ matrix.info.out_dir }}
 
       # for debug
-      - if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
-        with:
-          detached: true
-      - if: ${{ failure() }}
-        name: Sleep forever
-        run: sleep 1000000
+#      - if: ${{ failure() }}
+#        uses: mxschmitt/action-tmate@v3
+#        with:
+#          detached: true
+#      - if: ${{ failure() }}
+#        name: Sleep forever
+#        run: sleep 1000000
