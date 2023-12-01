@@ -62,14 +62,18 @@ jobs:
     steps:
       # ref: https://github.com/dart-lang/sdk/wiki/Building
 
+      - run: echo 'release_tag=${{ needs.jobs.generate-tag.outputs.release_tag }}'
+
       - run: |
           set -euxo pipefail
-          
-          echo 'release_tag=${{ needs.jobs.generate-tag.outputs.release_tag }}'
-
           sudo apt-get install git python3 curl xz-utils
           
+      - run: |
+          set -euxo pipefail
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+
+      - run: |
+          set -euxo pipefail
           export PATH="$PATH:$PWD/depot_tools"
 
           mkdir dart-sdk
@@ -77,13 +81,13 @@ jobs:
           fetch dart
           ls -al
           
-          cd sdk
+      - run: |
+          set -euxo pipefail
+          cd dart-sdk/sdk
           export ${{ matrix.info.options_prefix }}_OPTIONS="${{ matrix.info.options_value }}"
           export ${{ matrix.info.options_prefix }}_SYMBOLIZER_PATH="$PWD/buildtools/linux-x64/clang/bin/llvm-symbolizer"
           ./tools/build.py --no-goma --mode release --arch x64 --sanitizer ${{ matrix.info.build_sanitizer_flag }} runtime runtime_precompiled create_sdk
           ls -al
-          
-          cp dart-sdk/sdk/out/${{ matrix.info.out_dir }}/dart-sdk/bin/dart dart_${{ matrix.info.out_dir }}
 
       - run: |
           ls -al dart-sdk
@@ -106,7 +110,7 @@ jobs:
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.jobs.generate-tag.outputs.release_tag }}
-          files: dart_${{ matrix.info.out_dir }}
+          files: ${{ matrix.info.out_dir }}_dart-sdk.tar.gz
 
       # for debug
       - if: ${{ failure() }}
