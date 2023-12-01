@@ -13,27 +13,24 @@ jobs:
 
     steps:
       - run: |
-          mkdir d1
-          echo hi > d1/a.txt
-          mkdir d2
-          echo ha > d2/b.txt
-          ls -al d1
-          ls -al d2
+          mkdir mydir
+          echo hi > mydir/a.txt
+          ls -al mydir
 
       - uses: actions/upload-artifact@v3
         with:
           name: name1
-          path: d1
+          path: mydir
       - uses: softprops/action-gh-release@v1
         with:
           name: ReleaseExperimentHello
-          files: d1
+          files: mydir
 
       - uses: actions/upload-artifact@v3
         with:
           name: name2
-          path: d2
+          path: mydir/a.txt
       - uses: softprops/action-gh-release@v1
         with:
           name: ReleaseExperimentHello
-          files: d2
+          path: mydir/a.txt
