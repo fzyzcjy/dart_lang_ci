@@ -10,13 +10,14 @@ permissions:
   contents: write
 
 jobs:
-  build-upload:
-    name: Build and Upload Artifacts
+  generate-tag:
+    name: Generate release tag
     runs-on: ubuntu-latest
 
-    steps:
-      # ref: https://github.com/dart-lang/sdk/wiki/Building
+    outputs:
+      release_tag: ${{ steps.tag.outputs.release_tag }}
 
+    steps:
       - name: Generate release tag
         id: tag
         run: |
@@ -24,8 +25,18 @@ jobs:
           TAG=Build_$(date +"%Y.%m.%d_%H-%M-%S")
           echo "release_tag=$TAG" >> $GITHUB_OUTPUT
 
+  build-upload:
+    name: Build and Upload Artifacts
+    needs: generate-tag
+    runs-on: ubuntu-latest
+
+    steps:
+      # ref: https://github.com/dart-lang/sdk/wiki/Building
+
       - run: |
           set -euxo pipefail
+          
+          echo 'release_tag=${{ jobs.generate-tag.outputs.release_tag }}'
 
           sudo apt-get install git python3 curl xz-utils
           
@@ -63,7 +74,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
+          tag_name: ${{ jobs.generate-tag.outputs.release_tag }}
           files: dart-sdk/sdk/out/ReleaseASANX64/dart-sdk/bin/dart
 
       # for debug
