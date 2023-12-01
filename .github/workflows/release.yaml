@@ -24,19 +24,6 @@ jobs:
           TAG=Build_$(date +"%Y.%m.%d_%H-%M-%S")
           echo "release_tag=$TAG" >> $GITHUB_OUTPUT
 
-      - run: exit 1
-      - run: exit 2
-      - run: exit 3
-
-      # for debug
-      - if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
-        with:
-          detached: true
-      - if: ${{ failure() }}
-        name: Sleep forever
-        run: sleep 1000000
-
       - run: |
           set -euxo pipefail
 
@@ -75,3 +62,13 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
           files: mydir/a.txt
+
+      # for debug
+      - if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        with:
+          detached: true
+      - if: ${{ failure() }}
+        name: Sleep forever
+        run: sleep 1000000
+
