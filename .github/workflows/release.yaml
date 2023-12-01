@@ -1,0 +1,25 @@
+name: Release
+
+on:
+  workflow_dispatch: {}
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-upload:
+    name: Build and Upload Artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: TODO
+      - name: Upload artifacts to GitHub Action run
+        uses: actions/upload-artifact@v3
+        with:
+          name: TODO
+          path: TODO
+      - name: Upload artifacts to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: TODO
+          tag_name: TODO
