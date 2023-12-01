@@ -65,7 +65,7 @@ jobs:
     steps:
       # ref: https://github.com/dart-lang/sdk/wiki/Building
 
-      - run: echo 'release_tag=${{ needs.jobs.generate-tag.outputs.release_tag }}'
+      - run: echo 'release_tag=${{ needs.generate-tag.outputs.release_tag }}'
 
       - run: |
           set -euxo pipefail
@@ -118,7 +118,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.jobs.generate-tag.outputs.release_tag }}
+          tag_name: ${{ needs.generate-tag.outputs.release_tag }}
           files: ${{ env.OUTPUT_FILENAME }}
 
       # for debug
