@@ -30,6 +30,35 @@ jobs:
     needs: generate-tag
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        info:
+          - out_dir: ReleaseASANX64
+            build_sanitizer_flag: asan
+            options_prefix: ASAN
+            options_value: 'handle_segv=0:detect_leaks=1:detect_stack_use_after_return=0:disable_coredump=0:abort_on_error=1'
+
+          - out_dir: ReleaseMSANX64
+            build_sanitizer_flag: msan
+            options_prefix: MSAN
+            options_value: 'handle_segv=0:detect_leaks=1:detect_stack_use_after_return=0:disable_coredump=0:abort_on_error=1'
+
+          - out_dir: ReleaseLSANX64
+            build_sanitizer_flag: lsan
+            options_prefix: ASAN # not a typo - https://github.com/dart-lang/sdk/issues/54204
+            options_value: 'handle_segv=0:detect_leaks=1:detect_stack_use_after_return=0:disable_coredump=0:abort_on_error=1'
+
+          - out_dir: ReleaseTSANX64
+            build_sanitizer_flag: 'tsan dart'
+            options_prefix: TSAN
+            options_value: 'handle_segv=0:disable_coredump=0:abort_on_error=1'
+
+          - out_dir: ReleaseUBSANX64
+            build_sanitizer_flag: ubsan
+            options_prefix: UBSAN
+            options_value: 'handle_segv=0:disable_coredump=0:abort_on_error=1'
+
     steps:
       # ref: https://github.com/dart-lang/sdk/wiki/Building
 
@@ -49,40 +78,41 @@ jobs:
           ls -al
           
           cd sdk
-          export ASAN_OPTIONS="handle_segv=0:detect_leaks=1:detect_stack_use_after_return=0:disable_coredump=0:abort_on_error=1"
-          export ASAN_SYMBOLIZER_PATH="$PWD/buildtools/linux-x64/clang/bin/llvm-symbolizer"
-          ./tools/build.py --no-goma --mode release --arch x64 --sanitizer asan runtime runtime_precompiled create_sdk
+          export ${{ matrix.info.options_prefix }}_OPTIONS="${{ matrix.info.options_value }}"
+          export ${{ matrix.info.options_prefix }}_SYMBOLIZER_PATH="$PWD/buildtools/linux-x64/clang/bin/llvm-symbolizer"
+          ./tools/build.py --no-goma --mode release --arch x64 --sanitizer ${{ matrix.info.build_sanitizer_flag }} runtime runtime_precompiled create_sdk
           ls -al
+          
+          cp dart-sdk/sdk/out/${{ matrix.info.out_dir }}/dart-sdk/bin/dart dart_${{ matrix.info.out_dir }}
 
       - run: |
           ls -al dart-sdk
           ls -al dart-sdk/sdk
           ls -al dart-sdk/sdk/out
-          ls -al dart-sdk/sdk/out/ReleaseASANX64
-          ls -al dart-sdk/sdk/out/ReleaseASANX64/dart-sdk
-          ls -al dart-sdk/sdk/out/ReleaseASANX64/dart-sdk/bin
-          dart-sdk/sdk/out/ReleaseASANX64/dart-sdk/bin/dart --version
+          ls -al dart-sdk/sdk/out/${{ matrix.info.out_dir }}
+          ls -al dart-sdk/sdk/out/${{ matrix.info.out_dir }}/dart-sdk
+          ls -al dart-sdk/sdk/out/${{ matrix.info.out_dir }}/dart-sdk/bin
+          dart-sdk/sdk/out/${{ matrix.info.out_dir }}/dart-sdk/bin/dart --version
 
       - uses: actions/upload-artifact@v3
         with:
-          name: Dart_Out_ReleaseASANX64_DartBinary
-          path: dart-sdk/sdk/out/ReleaseASANX64/dart-sdk/bin/dart
+          name: Dart_Out_${{ matrix.info.out_dir }}_DartBinary
+          path: dart-sdk/sdk/out/${{ matrix.info.out_dir }}/dart-sdk/bin/dart
       - uses: actions/upload-artifact@v3
         with:
-          name: Dart_Out_ReleaseASANX64
-          path: dart-sdk/sdk/out/ReleaseASANX64/
+          name: Dart_Out_${{ matrix.info.out_dir }}
+          path: dart-sdk/sdk/out/${{ matrix.info.out_dir }}/
 
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ jobs.generate-tag.outputs.release_tag }}
-          files: dart-sdk/sdk/out/ReleaseASANX64/dart-sdk/bin/dart
+          files: dart_${{ matrix.info.out_dir }}
 
       # for debug
-#      - if: ${{ failure() }}
-#        uses: mxschmitt/action-tmate@v3
-#        with:
-#          detached: true
-#      - if: ${{ failure() }}
-#        name: Sleep forever
-#        run: sleep 1000000
-#
+      - if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        with:
+          detached: true
+      - if: ${{ failure() }}
+        name: Sleep forever
+        run: sleep 1000000
