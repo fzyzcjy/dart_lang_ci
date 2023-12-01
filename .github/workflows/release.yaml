@@ -45,18 +45,21 @@ jobs:
 
       - run: |
           ls -al dart-sdk
-          ls -al dart-sdk/dart
-          ls -al dart-sdk/dart/out
-          ls -al dart-sdk/dart/out/ReleaseASANX64
+          ls -al dart-sdk/sdk
+          ls -al dart-sdk/sdk/out
+          ls -al dart-sdk/sdk/out/ReleaseASANX64
+          ls -al dart-sdk/sdk/out/ReleaseASANX64/dart-sdk
+          ls -al dart-sdk/sdk/out/ReleaseASANX64/dart-sdk/bin
+          dart-sdk/sdk/out/ReleaseASANX64/dart-sdk/bin/dart --version
 
       - uses: actions/upload-artifact@v3
         with:
           name: Dart_Out_ReleaseASANX64_DartBinary
-          path: dart-sdk/dart/out/ReleaseASANX64/dart-sdk/bin/dart
+          path: dart-sdk/sdk/out/ReleaseASANX64/dart-sdk/bin/dart
       - uses: actions/upload-artifact@v3
         with:
           name: Dart_Out_ReleaseASANX64
-          path: dart-sdk/dart/out/ReleaseASANX64/
+          path: dart-sdk/sdk/out/ReleaseASANX64/
 
       - uses: softprops/action-gh-release@v1
         with:
