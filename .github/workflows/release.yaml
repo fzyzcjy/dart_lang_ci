@@ -65,6 +65,8 @@ jobs:
     steps:
       # ref: https://github.com/dart-lang/sdk/wiki/Building
 
+      - uses: catchpoint/workflow-telemetry-action@v1
+
       - run: echo 'release_tag=${{ needs.generate-tag.outputs.release_tag }}'
 
       - run: |
