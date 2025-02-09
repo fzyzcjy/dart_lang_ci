@@ -86,13 +86,14 @@ jobs:
           cd dart-sdk
           fetch dart
           ls -al
-          
+
+      # https://github.com/dart-lang/sdk/blob/master/docs/Debugging-Dart-VM-with-AddressSanitizer.md
       - run: |
           set -euxo pipefail
           cd dart-sdk/sdk
           export ${{ matrix.info.options_prefix }}_OPTIONS="${{ matrix.info.options_value }}"
           export ${{ matrix.info.options_prefix }}_SYMBOLIZER_PATH="$PWD/buildtools/linux-x64/clang/bin/llvm-symbolizer"
-          ./tools/build.py --no-goma --mode release --arch x64 --sanitizer ${{ matrix.info.build_sanitizer_flag }} runtime runtime_precompiled create_sdk
+          ./tools/build.py --mode release --arch x64 --sanitizer ${{ matrix.info.build_sanitizer_flag }} runtime runtime_precompiled create_sdk
           ls -al
 
       - run: |
