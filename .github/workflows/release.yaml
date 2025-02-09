@@ -109,11 +109,11 @@ jobs:
           ls -al dart-sdk/sdk/out/${{ matrix.info.out_dir }}/dart-sdk/bin
           dart-sdk/sdk/out/${{ matrix.info.out_dir }}/dart-sdk/bin/dart --version
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Dart_Out_${{ matrix.info.out_dir }}_dart-sdk
           path: ${{ env.OUTPUT_FILENAME }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Dart_Out_${{ matrix.info.out_dir }}
           path: dart-sdk/sdk/out/${{ matrix.info.out_dir }}/
