@@ -42,25 +42,25 @@ jobs:
             options_prefix: ASAN
             options_value: 'handle_segv=0:detect_leaks=1:detect_stack_use_after_return=0:disable_coredump=0:abort_on_error=1'
 
-          # - out_dir: ReleaseMSANX64
-          #   build_sanitizer_flag: msan
-          #   options_prefix: MSAN
-          #   options_value: 'handle_segv=0:detect_leaks=1:detect_stack_use_after_return=0:disable_coredump=0:abort_on_error=1'
+          - out_dir: ReleaseMSANX64
+            build_sanitizer_flag: msan
+            options_prefix: MSAN
+            options_value: 'handle_segv=0:detect_leaks=1:detect_stack_use_after_return=0:disable_coredump=0:abort_on_error=1'
 
-          # - out_dir: ReleaseLSANX64
-          #   build_sanitizer_flag: lsan
-          #   options_prefix: ASAN # not a typo - https://github.com/dart-lang/sdk/issues/54204
-          #   options_value: 'handle_segv=0:detect_leaks=1:detect_stack_use_after_return=0:disable_coredump=0:abort_on_error=1'
+          - out_dir: ReleaseLSANX64
+            build_sanitizer_flag: lsan
+            options_prefix: ASAN # not a typo - https://github.com/dart-lang/sdk/issues/54204
+            options_value: 'handle_segv=0:detect_leaks=1:detect_stack_use_after_return=0:disable_coredump=0:abort_on_error=1'
 
-          # - out_dir: ReleaseTSANX64
-          #   build_sanitizer_flag: 'tsan dart'
-          #   options_prefix: TSAN
-          #   options_value: 'handle_segv=0:disable_coredump=0:abort_on_error=1'
+          - out_dir: ReleaseTSANX64
+            build_sanitizer_flag: 'tsan dart'
+            options_prefix: TSAN
+            options_value: 'handle_segv=0:disable_coredump=0:abort_on_error=1'
 
-          # - out_dir: ReleaseUBSANX64
-          #   build_sanitizer_flag: ubsan
-          #   options_prefix: UBSAN
-          #   options_value: 'handle_segv=0:disable_coredump=0:abort_on_error=1'
+          - out_dir: ReleaseUBSANX64
+            build_sanitizer_flag: ubsan
+            options_prefix: UBSAN
+            options_value: 'handle_segv=0:disable_coredump=0:abort_on_error=1'
 
     steps:
       # ref: https://github.com/dart-lang/sdk/wiki/Building
