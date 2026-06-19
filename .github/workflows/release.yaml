@@ -109,6 +109,17 @@ jobs:
       - run: |
           set -euxo pipefail
           cd dart-sdk/sdk
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("tools/bots/test_matrix.json")
+          data = json.loads(path.read_text())
+          key = "${{ matrix.info.options_prefix }}_OPTIONS"
+          data["sanitizer_options"][key] = "${{ matrix.info.options_value }}"
+          path.write_text(json.dumps(data, indent=2) + "\n")
+          print(f"{key}={data['sanitizer_options'][key]}")
+          PY
           export ${{ matrix.info.options_prefix }}_OPTIONS="${{ matrix.info.options_value }}"
           export ${{ matrix.info.options_prefix }}_SYMBOLIZER_PATH="$PWD/buildtools/linux-x64/clang/bin/llvm-symbolizer"
           ./tools/build.py --mode release --arch x64 --sanitizer ${{ matrix.info.build_sanitizer_flag }} runtime runtime_precompiled create_sdk
