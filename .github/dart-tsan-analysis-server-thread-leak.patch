@@ -1,0 +1,52 @@
+diff --git a/build/gn_run_binary.py b/build/gn_run_binary.py
+--- a/build/gn_run_binary.py
++++ b/build/gn_run_binary.py
+@@ -20,9 +20,13 @@ def run_command(command):
+     try:
+         subprocess.check_output(command, stderr=subprocess.STDOUT)
+         return 0
+     except subprocess.CalledProcessError as e:
++        output = _decode(e.output)
++        if _is_allowed_tsan_analysis_server_thread_leak(
++                command, e.returncode, output):
++            return 0
+         return ("Command failed: " + ' '.join(command) + "\n" + "exitCode: " +
+-                str(e.returncode) + "\n" + "output: " + _decode(e.output))
++                str(e.returncode) + "\n" + "output: " + output)
+     except OSError as e:
+         return ("Command failed: " + ' '.join(command) + "\n" + "output: " +
+                 _decode(e.strerror))
+@@ -29,5 +33,33 @@ def run_command(command):
+ 
+ 
++def _is_allowed_tsan_analysis_server_thread_leak(command, returncode, output):
++    snapshots = [
++        argument.removeprefix('--snapshot=') for argument in command
++        if argument.startswith('--snapshot=')
++    ]
++    required_output = [
++        "'DartWorker'",
++        'dart::OSThread::TryStart',
++        'dart::ThreadPool::Worker::StartThread',
++        'dart::RunServiceTask::Run',
++        'dart::ThreadPool::Worker::Main',
++        'dart::ThreadStart',
++    ]
++    return (
++        returncode == -6 and
++        snapshots == ['gen/analysis_server.dart.snapshot'] and
++        os.path.isfile(snapshots[0]) and
++        os.path.getsize(snapshots[0]) > 0 and
++        output.count("'DartWorker'") == 1 and
++        output.count('WARNING: ThreadSanitizer: thread leak') == 1 and
++        output.count('WARNING: ThreadSanitizer:') == 1 and
++        output.count('SUMMARY: ThreadSanitizer: thread leak') == 1 and
++        output.count('SUMMARY: ThreadSanitizer:') == 1 and
++        output.count('==================') == 2 and
++        output.rstrip().endswith('==================') and
++        all(marker in output for marker in required_output))
++
++
+ def _decode(bytes):
+     return bytes.decode("utf-8")
+ 
