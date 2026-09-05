@@ -111,7 +111,7 @@ jobs:
       - run: |
           set -euxo pipefail
           if [[ "${{ matrix.info.out_dir }}" == "ReleaseTSANX64" ]]; then
-            git -C dart-sdk/sdk apply "$GITHUB_WORKSPACE/.github/dart-tsan-analysis-server-thread-leak.patch"
+            git -C dart-sdk/sdk apply "$GITHUB_WORKSPACE/.github/dart-tsan-build-options.patch"
           fi
           cd dart-sdk/sdk
           export ${{ matrix.info.options_prefix }}_OPTIONS="${{ matrix.info.options_value }}"
