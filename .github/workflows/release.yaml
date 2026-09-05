@@ -65,7 +65,7 @@ jobs:
           - out_dir: ReleaseTSANX64
             build_sanitizer_flag: 'tsan dart'
             options_prefix: TSAN
-            options_value: 'handle_segv=0:disable_coredump=0:abort_on_error=1:report_thread_leaks=0'
+            options_value: 'handle_segv=0:disable_coredump=0:abort_on_error=1:suppressions=$GITHUB_WORKSPACE/.github/tsan-suppressions.txt'
             experimental: true
 
           - out_dir: ReleaseUBSANX64
