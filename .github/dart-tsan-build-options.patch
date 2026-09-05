@@ -1,0 +1,11 @@
+diff --git a/tools/build.py b/tools/build.py
+--- a/tools/build.py
++++ b/tools/build.py
+@@ -324,6 +324,7 @@ def Main():
+     # If the binaries are not built with sanitizers the flag should have no
+     # effect.
+     env = dict(os.environ)
+     env.update(SanitizerEnvironmentVariables())
++    env['TSAN_OPTIONS'] += ':report_thread_leaks=0'
+ 
+     # macOS's python sets CPATH, LIBRARY_PATH, SDKROOT implicitly.
